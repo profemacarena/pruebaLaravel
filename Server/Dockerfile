@@ -9,11 +9,12 @@ RUN a2enmod rewrite
 WORKDIR /var/www/html
 COPY . .
 
-# Composer
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+# Composer v1 (Laravel 5.6 lo necesita)
+RUN curl -sS https://getcomposer.org/download/1.10.26/composer.phar -o /usr/local/bin/composer \
+ && chmod +x /usr/local/bin/composer
 
 # Dependencias
-RUN composer install --no-dev --optimize-autoloader --no-interaction --no-progress --no-scripts
+RUN composer install --no-dev --optimize-autoloader --no-interaction --no-progress
 
 
 # Apache -> /public (si tu Laravel tiene carpeta public)
@@ -21,6 +22,6 @@ RUN sed -i 's|DocumentRoot /var/www/html|DocumentRoot /var/www/html/public|g' /e
 
 EXPOSE 80
 
-CMD php artisan config:clear && php artisan cache:clear && php artisan migrate --force && apache2-foreground
+CMD apache2-foreground
 
 
